@@ -17,7 +17,16 @@ const userSchema = new mongoose.Schema({
     required: true,
     minLength: [8, "Password mut be at least 8 characters"],
   },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
   refreshToken: {
     type: String,
   },
 });
+
+const userModel = mongoose.model("users", userSchema);
+
+export default userModel;
