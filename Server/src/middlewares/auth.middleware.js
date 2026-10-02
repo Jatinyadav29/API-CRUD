@@ -11,7 +11,7 @@ const authenticate = (req, res, next) => {
   try {
     const decode = verifyAccessToken(accessToken);
 
-    res.user = decode;
+    req.user = decode;
     next();
   } catch (error) {
     return res.status(401).json({
@@ -20,4 +20,14 @@ const authenticate = (req, res, next) => {
   }
 };
 
-export default authenticate;
+const isSeller = (req, res, next) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({
+      message: "Access restricted",
+    });
+  }
+
+  next();
+};
+
+export { authenticate, isSeller };
