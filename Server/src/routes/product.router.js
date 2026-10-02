@@ -24,10 +24,16 @@ router.post(
   upload.array("images"),
 
   (req, res, next) => {
-    req.body.price = JSON.parse(req.body.price);
-    req.body.sizes = JSON.parse(req.body.sizes);
+    try {
+      req.body.price = JSON.parse(req.body.price);
+      req.body.sizes = JSON.parse(req.body.sizes);
 
-    next();
+      next();
+    } catch (error) {
+      return res.status(400).json({
+        message: "Invalid product data format",
+      });
+    }
   },
 
   validateBody(productSchema),
@@ -50,10 +56,16 @@ router.put(
   upload.array("images"),
 
   (req, res, next) => {
-    req.body.price = JSON.parse(req.body.price);
-    req.body.sizes = JSON.parse(req.body.sizes);
+    try {
+      req.body.price = JSON.parse(req.body.price);
+      req.body.sizes = JSON.parse(req.body.sizes);
 
-    next();
+      next();
+    } catch (error) {
+      return res.status(400).json({
+        message: "Invalid product data format",
+      });
+    }
   },
 
   validateBody(productSchema),

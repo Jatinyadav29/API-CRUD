@@ -15,7 +15,10 @@ const productSchema = z.object({
     .max(500, "Discription must be within 500 characters limit"),
 
   price: z.object({
-    amount: z.number("Amount is required").min(0, "Amount can't be negative"),
+    amount: z
+      .number("Amount is required")
+      .min(0, "Amount can't be negative")
+      .max(1000000, "Amount is too large"),
     currency: z.enum(["INR", "USD"]).default("INR").optional(),
   }),
 

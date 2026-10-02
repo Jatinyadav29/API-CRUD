@@ -41,6 +41,7 @@ const registerController = async (req, res) => {
         user: {
           name: user.name,
           email: user.email,
+          role: user.role,
         },
         accessToken,
       },
@@ -54,15 +55,15 @@ const registerController = async (req, res) => {
   }
 };
 
-const LoginController = async (req, res) => {
+const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
+      return res.status(401).json({
+        message: "Unauthorized, email or password invalid",
       });
     }
 
@@ -91,12 +92,40 @@ const LoginController = async (req, res) => {
         user: {
           email: user.email,
           name: user.name,
+          role: user.role,
         },
         accessToken,
       },
     });
   } catch (error) {
     console.log(`Error in login controller - ${error}`);
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+const logoutController = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (refreshToken) {
+      await userModel.findOneAndUpdate(
+        { refreshToken },
+        { refreshToken: null },
+      );
+    }
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+    });
+
+    return res.status(200).json({
+      message: "Logout successful",
+    });
+  } catch (error) {
+    console.log(`Error in logout controller - ${error}`);
 
     return res.status(500).json({
       message: "Internal server error",
@@ -162,7 +191,7 @@ const refreshTokenController = async (req, res) => {
 
 const getInfoController = async (req, res) => {
   try {
-    const { id } = res.user;
+    const { id } = req.user;
 
     const user = await userModel.findById(id);
 
@@ -191,7 +220,8 @@ const getInfoController = async (req, res) => {
 
 export {
   registerController,
-  LoginController,
+  loginController,
+  logoutController,
   refreshTokenController,
   getInfoController,
 };

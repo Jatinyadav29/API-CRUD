@@ -47,6 +47,8 @@ const createProductController = async (req, res) => {
   } catch (error) {
     console.log(`Error in create product controller - ${error}`);
 
+    await Promise.all(uploadedImages.map((image) => deleteFile(image.fileId)));
+
     return res.status(500).json({
       message: "Internal server error",
     });
@@ -109,6 +111,12 @@ const updateSingleProductController = async (req, res) => {
 
     const { title, discription, price, sizes } = req.body;
 
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        message: "At least one product image is required",
+      });
+    }
+
     const images = await Promise.all(
       req.files.map(async (file) => {
         const response = await uploadFiles({
@@ -170,13 +178,9 @@ const deleteSingleProductController = async (req, res) => {
       });
     }
 
-    await Promise.all(
-      product.images.map((image) => {
-        deleteFile(image.fileId);
-      }),
-    );
-
     await productModel.findByIdAndDelete(id);
+
+    await Promise.all(product.images.map((image) => deleteFile(image.fileId)));
 
     return res.status(200).json({
       message: "Product deleted successfully",

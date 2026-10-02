@@ -5,7 +5,7 @@ const validateBody = (schema) => (req, res, next) => {
     return res.status(400).json({
       message: "Validation failed",
       errors: result.error.issues.map((issue) => ({
-        field: issue.path.join("."),
+        feild: issue.path.join("."),
         message: issue.message,
       })),
     });
@@ -22,7 +22,7 @@ const validateParams = (schema) => (req, res, next) => {
     return res.status(400).json({
       message: "Validation failed",
       errors: result.error.issues.map((issue) => ({
-        field: issue.path.join("."),
+        feild: issue.path.join("."),
         message: issue.message,
       })),
     });
