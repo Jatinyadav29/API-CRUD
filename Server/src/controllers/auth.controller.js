@@ -1,6 +1,14 @@
 import userModel from "../models/user.model.js";
+import config from "../config/config.js";
 import bcrypt from "bcryptjs";
 import { generateToken, verifyRefreshToken } from "../utils/auth.util.js";
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
 
 const registerController = async (req, res) => {
   try {
@@ -33,7 +41,7 @@ const registerController = async (req, res) => {
 
     await userModel.findByIdAndUpdate(user._id, { refreshToken: refreshToken });
 
-    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
     return res.status(200).json({
       message: "User registered successfully",
@@ -84,7 +92,7 @@ const loginController = async (req, res) => {
       refreshToken,
     });
 
-    res.cookie("refreshToken", refreshToken, { httpOnly: true });
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
     return res.status(200).json({
       message: "Login successful",
@@ -119,6 +127,8 @@ const logoutController = async (req, res) => {
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
+      secure: config.NODE_ENV === "production",
+      sameSite: "lax",
     });
 
     return res.status(200).json({
@@ -172,7 +182,7 @@ const refreshTokenController = async (req, res) => {
       refreshToken: newRefreshToken,
     });
 
-    res.cookie("refreshToken", newRefreshToken, { httpOnly: true });
+    res.cookie("refreshToken", newRefreshToken, refreshCookieOptions);
 
     return res.status(200).json({
       message: "Token refreshed successfully",

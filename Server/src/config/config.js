@@ -7,6 +7,7 @@ const config = {
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   IMAGEKIT_PUBLIC_KEY: process.env.IMAGEKIT_PUBLIC_KEY,
   IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+  NODE_ENV: process.env.NODE_ENV || "development",
 };
 
 export default config;
